@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MafiaNpc", "MafiaNpc\MafiaNpc.csproj", "{344D676C-F256-4450-A9A6-CE94A9B4FF44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{344D676C-F256-4450-A9A6-CE94A9B4FF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{344D676C-F256-4450-A9A6-CE94A9B4FF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{344D676C-F256-4450-A9A6-CE94A9B4FF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{344D676C-F256-4450-A9A6-CE94A9B4FF44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
