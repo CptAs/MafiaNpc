@@ -1,0 +1,16 @@
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\MafiaNpc.exe
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\MafiaNpc.deps.json
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\MafiaNpc.runtimeconfig.json
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\MafiaNpc.runtimeconfig.dev.json
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\MafiaNpc.dll
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\ref\MafiaNpc.dll
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\bin\Debug\net5.0\MafiaNpc.pdb
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.csprojAssemblyReference.cache
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.AssemblyInfo.cs
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.dll
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\ref\MafiaNpc.dll
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.pdb
+C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.genruntimeconfig.cache
