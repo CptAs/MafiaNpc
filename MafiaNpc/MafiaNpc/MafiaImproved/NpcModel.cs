@@ -25,6 +25,7 @@ namespace MafiaNpc.MafiaImproved
         {
             Name = name;
             KillingProbability = killingProbability;
+            RelationFactor = new Dictionary<string, double>();
             Function = function;
             IsActive = true;
             _random = new Random();
