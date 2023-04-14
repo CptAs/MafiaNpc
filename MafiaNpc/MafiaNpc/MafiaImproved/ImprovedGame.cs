@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 
 namespace MafiaNpc.MafiaImproved
 {
@@ -52,6 +51,8 @@ namespace MafiaNpc.MafiaImproved
             GenerateCitizens();
             AssignRoles();
             GenerateExileProbability();
+            Citizens = Citizens.OrderBy(a => _random.Next()).ToList();
+            
         }
 
         public void GenerateMafia()
@@ -120,7 +121,8 @@ namespace MafiaNpc.MafiaImproved
         public List<ExecuteAction> GenerateActions()
         {
             var actions = new List<ExecuteAction>();
-            foreach (var citizen in Citizens.Where(x=>x.IsActive))
+            var activeCitizens = Citizens.Where(x => x.IsActive);
+            foreach (var citizen in activeCitizens)
             {
                 actions.Add(new ExecuteAction
                 {
@@ -136,7 +138,7 @@ namespace MafiaNpc.MafiaImproved
                     TargetName = null,
                     Probability = 20
                 });
-                foreach (var target in Citizens.Where(x=> x.Name != citizen.Name))
+                foreach (var target in activeCitizens.Where(x=> x.Name != citizen.Name))
                 {
                     actions.Add(new ExecuteAction
                     {
@@ -193,7 +195,7 @@ namespace MafiaNpc.MafiaImproved
                     {
                         Console.WriteLine($"{c.Name} was saved by doctor that night");
                     }
-                    break;
+                    return;
                 }
             }
         }
@@ -218,9 +220,8 @@ namespace MafiaNpc.MafiaImproved
                 {
                     _savedPerson = c.Key;
                     Console.WriteLine($"{c.Key} was selected for save that night");
+                    return;
                 }
-
-                break;
             }
         }
 
@@ -255,9 +256,9 @@ namespace MafiaNpc.MafiaImproved
                             _policeCheckings.Add(selectedCitizen.Name, false);
                             Console.WriteLine($"{c.Key} was selected for check that night and turn out to be citizen");
                         }
+                        
+                        return;
                     }
-
-                    break;
                 }
             }
         }
@@ -282,9 +283,9 @@ namespace MafiaNpc.MafiaImproved
                     var selectedCitizen = activeCitizens.FirstOrDefault(x => x.Name == c.Key);
                     ExileAction(selectedCitizen);
                     Console.WriteLine($"{c.Key} was selected by hunter to be also killed");
+                    
+                    return;
                 }
-
-                break;
             }
         }
 
@@ -328,7 +329,8 @@ namespace MafiaNpc.MafiaImproved
         public void CollaborateAction(NpcModel source, NpcModel target)
         {
             Console.WriteLine($"{source.Name} wants to collaborate with {target.Name}");
-            if (target.Function == Function.PoliceOfficer && _policeCheckings[source.Name])
+            
+            if (target.Function == Function.PoliceOfficer && _policeCheckings.Keys.Contains(source.Name) && _policeCheckings[source.Name])
             {
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
                 source.RelationFactor[target.Name] += -20;

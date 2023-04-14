@@ -34,19 +34,24 @@ namespace MafiaNpc.MafiaImproved
         public string Vote(List<string> activeCitizens)
         {
             var peopleToVote = RelationFactor.Where(x => activeCitizens.Contains(x.Key));
-            var sumOfExileRate = peopleToVote.Sum(x => 1/x.Value);
+            var sumOfExileRate = peopleToVote.Sum(x => 1/((x.Value*10)+1));
             var randomIndex = _random.NextDouble() * sumOfExileRate;
             var currentValue = 0.0;
             var selectedPerson = "";
             foreach (var c in peopleToVote)
             {
-                currentValue += c.Value;
+                currentValue += 1/(c.Value*10);
                 if (currentValue > randomIndex)
                 {
                     selectedPerson = c.Key;
+                    break;
                 }
             }
 
+            if (selectedPerson == "")
+            {
+                Console.WriteLine("oo");
+            }
             return selectedPerson;
         }
     }
