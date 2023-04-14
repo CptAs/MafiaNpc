@@ -47,11 +47,6 @@ namespace MafiaNpc.MafiaImproved
                     break;
                 }
             }
-
-            if (selectedPerson == "")
-            {
-                Console.WriteLine("oo");
-            }
             return selectedPerson;
         }
     }
