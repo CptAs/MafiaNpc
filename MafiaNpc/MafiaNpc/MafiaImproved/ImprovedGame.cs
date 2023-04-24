@@ -307,15 +307,15 @@ namespace MafiaNpc.MafiaImproved
                 var randomIndex = _random.Next(1, 100);
                 if (randomIndex > 50)
                 {
-                    citizen.RelationFactor[source.Name] += -30;
+                    citizen.ChangeRelationFactor(source.Name, -30);
                 }
                 else
                 {
-                    citizen.RelationFactor[source.Name] += 50;
+                    citizen.ChangeRelationFactor(source.Name, 50);
                 }
             }
-
-            source.KillingProbability += 10;
+            
+            source.ChangeKillingProbability(10);
         }
 
         public void SmallTalkAction(NpcModel source)
@@ -324,20 +324,20 @@ namespace MafiaNpc.MafiaImproved
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name).ToList();
             foreach (var citizen in activeCitizens)
             {
-                citizen.RelationFactor[source.Name] += 10;
+                citizen.ChangeRelationFactor(source.Name, 10);
             }
 
-            source.KillingProbability += -30;
+            source.ChangeKillingProbability(-30);
         }
 
         public void CollaborateAction(NpcModel source, NpcModel target)
         {
             Console.WriteLine($"{source.Name} wants to collaborate with {target.Name}");
-            source.KillingProbability += 20;
+            source.ChangeKillingProbability(20);
             if (target.Function == Function.PoliceOfficer && _policeCheckings.Keys.Contains(source.Name) && _policeCheckings[source.Name])
             {
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
-                source.RelationFactor[target.Name] += -20;
+                source.ChangeRelationFactor(target.Name, -30);
                 target.KillingProbability += -10;
                 return;
             }
@@ -346,18 +346,18 @@ namespace MafiaNpc.MafiaImproved
             var randomIndex = _random.NextDouble() * 200;
             if (randomIndex > sourceRelationFactor + targetRelationFactor)
             {
-                source.RelationFactor[target.Name] += -20;
-                target.RelationFactor[source.Name] += 10;
+                source.ChangeRelationFactor(target.Name, -20);
+                target.ChangeRelationFactor(source.Name, 10);
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
-                target.KillingProbability += -10;
+                target.ChangeKillingProbability(-10);
             }
             else
             {
-                source.RelationFactor[target.Name] += 100;
-                target.RelationFactor[source.Name] += 100;
+                source.ChangeRelationFactor(target.Name, 100);
+                target.ChangeRelationFactor(source.Name, 100);
                 _collaborators.Add(source.Name, target.Name);
                 Console.WriteLine($"{target.Name} wants to collaborate with {source.Name}");
-                target.KillingProbability += 20;
+                target.ChangeKillingProbability(20);
             }
         }
 
@@ -365,8 +365,8 @@ namespace MafiaNpc.MafiaImproved
         {
             Console.WriteLine($"{source.Name} accuse {target.Name}");
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name && x.Name != target.Name).ToList();
-            source.RelationFactor[target.Name] += -10;
-            target.RelationFactor[source.Name] += -20;
+            source.ChangeRelationFactor(target.Name, -10);
+            target.ChangeRelationFactor(source.Name, -20);
             foreach (var citizen in activeCitizens)
             {
                 var randomIndex = _random.NextDouble() * 100;
@@ -374,24 +374,24 @@ namespace MafiaNpc.MafiaImproved
                 randomIndex += -citizen.RelationFactor[target.Name];
                 if (randomIndex > 50)
                 {
-                    citizen.RelationFactor[target.Name] += -20;
+                    citizen.ChangeRelationFactor(target.Name, -20);
                 }
                 else
                 {
-                    citizen.RelationFactor[source.Name] += -10;
+                    citizen.ChangeRelationFactor(source.Name, -10);
                 }
             }
 
-            source.KillingProbability += 10;
-            target.KillingProbability += 20;
+            source.ChangeKillingProbability(10);
+            target.ChangeKillingProbability(20);
         }
 
         public void DefendAction(NpcModel source, NpcModel target)
         {
             Console.WriteLine($"{source.Name} defended {target.Name}");
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name && x.Name != target.Name).ToList();
-            source.RelationFactor[target.Name] += 10;
-            target.RelationFactor[source.Name] += 20;
+            source.ChangeRelationFactor(target.Name, 10);
+            target.ChangeRelationFactor(source.Name, 20);
             foreach (var citizen in activeCitizens)
             {
                 var randomIndex = _random.NextDouble() * 100;
@@ -399,18 +399,18 @@ namespace MafiaNpc.MafiaImproved
                 randomIndex += -(20/citizen.RelationFactor[target.Name]);
                 if (randomIndex < 70)
                 {
-                    citizen.RelationFactor[target.Name] += 20;
-                    citizen.RelationFactor[source.Name] += 10;
+                    citizen.ChangeRelationFactor(target.Name, 20);
+                    citizen.ChangeRelationFactor(source.Name, 10);
                 }
                 else
                 {
-                    citizen.RelationFactor[source.Name] += -20;
-                    citizen.RelationFactor[target.Name] += -10;
+                    citizen.ChangeRelationFactor(source.Name, -20);
+                    citizen.ChangeRelationFactor(target.Name, -10);
                 }
             }
 
-            source.KillingProbability += 20;
-            target.KillingProbability += 10;
+            source.ChangeKillingProbability(20);
+            target.ChangeKillingProbability(10);
         }
 
         public bool DoDayTurn()

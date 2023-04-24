@@ -49,5 +49,33 @@ namespace MafiaNpc.MafiaImproved
             }
             return selectedPerson;
         }
+
+        public void ChangeRelationFactor(string citizen, double value)
+        {
+            RelationFactor[citizen] += value;
+            if (RelationFactor[citizen] > 100)
+            {
+                RelationFactor[citizen] = 100;
+            }
+
+            if (RelationFactor[citizen] < 0)
+            {
+                RelationFactor[citizen] = 0;
+            }
+        }
+
+        public void ChangeKillingProbability(double value)
+        {
+            KillingProbability += value;
+            if (KillingProbability > 100)
+            {
+                KillingProbability = 100;
+            }
+
+            if (KillingProbability < 0)
+            {
+                KillingProbability = 0;
+            }
+        }
     }
 }
