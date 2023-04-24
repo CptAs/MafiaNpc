@@ -314,6 +314,8 @@ namespace MafiaNpc.MafiaImproved
                     citizen.RelationFactor[source.Name] += 50;
                 }
             }
+
+            source.KillingProbability += 10;
         }
 
         public void SmallTalkAction(NpcModel source)
@@ -324,16 +326,19 @@ namespace MafiaNpc.MafiaImproved
             {
                 citizen.RelationFactor[source.Name] += 10;
             }
+
+            source.KillingProbability += -30;
         }
 
         public void CollaborateAction(NpcModel source, NpcModel target)
         {
             Console.WriteLine($"{source.Name} wants to collaborate with {target.Name}");
-            
+            source.KillingProbability += 20;
             if (target.Function == Function.PoliceOfficer && _policeCheckings.Keys.Contains(source.Name) && _policeCheckings[source.Name])
             {
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
                 source.RelationFactor[target.Name] += -20;
+                target.KillingProbability += -10;
                 return;
             }
             var sourceRelationFactor = source.RelationFactor[target.Name];
@@ -344,6 +349,7 @@ namespace MafiaNpc.MafiaImproved
                 source.RelationFactor[target.Name] += -20;
                 target.RelationFactor[source.Name] += 10;
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
+                target.KillingProbability += -10;
             }
             else
             {
@@ -351,6 +357,7 @@ namespace MafiaNpc.MafiaImproved
                 target.RelationFactor[source.Name] += 100;
                 _collaborators.Add(source.Name, target.Name);
                 Console.WriteLine($"{target.Name} wants to collaborate with {source.Name}");
+                target.KillingProbability += 20;
             }
         }
 
@@ -374,6 +381,9 @@ namespace MafiaNpc.MafiaImproved
                     citizen.RelationFactor[source.Name] += -10;
                 }
             }
+
+            source.KillingProbability += 10;
+            target.KillingProbability += 20;
         }
 
         public void DefendAction(NpcModel source, NpcModel target)
@@ -398,6 +408,9 @@ namespace MafiaNpc.MafiaImproved
                     citizen.RelationFactor[target.Name] += -10;
                 }
             }
+
+            source.KillingProbability += 20;
+            target.KillingProbability += 10;
         }
 
         public bool DoDayTurn()
