@@ -12,6 +12,15 @@ namespace MafiaNpc.MafiaImproved
         Doctor,
         Hunter
     }
+
+    public class BigFivePersonalityTraits
+    {
+        public double Openness;
+        public double Conscientiousness;
+        public double Extraversion;
+        public double Agreeableness;
+        public double Neuroticism;
+    }
     public class NpcModel
     {
         public string Name { get; set; }
@@ -19,9 +28,10 @@ namespace MafiaNpc.MafiaImproved
         public Dictionary<string, double> RelationFactor { get; set; }
         public bool IsActive { get; set; }
         public Function Function { get; set; }
+        public BigFivePersonalityTraits Character { get; set; }
         private Random _random;
 
-        public NpcModel(string name, double killingProbability, Function function)
+        public NpcModel(string name, double killingProbability, Function function, BigFivePersonalityTraits character)
         {
             Name = name;
             KillingProbability = killingProbability;
@@ -29,6 +39,7 @@ namespace MafiaNpc.MafiaImproved
             Function = function;
             IsActive = true;
             _random = new Random();
+            Character = character;
         }
 
         public string Vote(List<string> activeCitizens)

@@ -59,14 +59,30 @@ namespace MafiaNpc.MafiaImproved
         {
             for (int i = 0; i < NumberOfMafia; i++)
             {
-                Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia));
+                var character = new BigFivePersonalityTraits
+                {
+                    Openness = _random.Next(100),
+                    Agreeableness = _random.Next(100),
+                    Extraversion = _random.Next(100),
+                    Conscientiousness = _random.Next(100),
+                    Neuroticism = _random.Next(100),
+                };
+                Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia, character));
             }
         }
         public void GenerateCitizens()
         {
             for (int i = 0; i < NumberOfCitizens; i++)
             {
-                Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen));
+                var character = new BigFivePersonalityTraits
+                {
+                    Openness = _random.Next(100),
+                    Agreeableness = _random.Next(100),
+                    Extraversion = _random.Next(100),
+                    Conscientiousness = _random.Next(100),
+                    Neuroticism = _random.Next(100),
+                };
+                Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen, character));
             }
         }
 
