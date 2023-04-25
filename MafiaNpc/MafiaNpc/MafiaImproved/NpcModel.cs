@@ -51,7 +51,7 @@ namespace MafiaNpc.MafiaImproved
             var selectedPerson = "";
             foreach (var c in peopleToVote)
             {
-                currentValue += 1/(c.Value*10);
+                currentValue += 1/((c.Value*10) + 1);
                 if (currentValue > randomIndex)
                 {
                     selectedPerson = c.Key;

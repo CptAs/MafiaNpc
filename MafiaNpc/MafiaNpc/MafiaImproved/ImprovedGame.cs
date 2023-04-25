@@ -219,8 +219,8 @@ namespace MafiaNpc.MafiaImproved
         public void DoctorSaveAction()
         {
             var activeCitizens = Citizens.Where(x => x.IsActive).ToList();
-            var doctor = activeCitizens.FirstOrDefault(x => x.Function == Function.Doctor);
-            if (doctor is null)
+            var doctor = Citizens.FirstOrDefault(x => x.Function == Function.Doctor);
+            if (!doctor.IsActive)
             {
                 _savedPerson = null;
                 return;
@@ -256,14 +256,18 @@ namespace MafiaNpc.MafiaImproved
 
             var possibleRelations = policeman.RelationFactor
                 .Where(x => activeCitizens.Exists(y => y.Name == x.Key));
-            var sumOfRelationFactor = possibleRelations.Sum(x=> 1/x.Value);
+            var sumOfRelationFactor = possibleRelations.Sum(x=> 1/(10*x.Value + 1));
+            if (!possibleRelations.Any())
+            {
+                return;
+            }
             while (true && _policeCheckings.Count != policeman.RelationFactor.Count)
             {
                 var randomIndexRelation = _random.NextDouble() * sumOfRelationFactor;
                 var currentValueSave = 0.0;
                 foreach (var c in possibleRelations)
                 {
-                    currentValueSave += 1/c.Value;
+                    currentValueSave += 1/(10*c.Value + 1);
                     if (currentValueSave > randomIndexRelation)
                     {
                         var selectedCitizen = Citizens.FirstOrDefault(x => x.Name == c.Key);
