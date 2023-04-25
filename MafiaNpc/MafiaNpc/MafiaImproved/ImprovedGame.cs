@@ -243,23 +243,30 @@ namespace MafiaNpc.MafiaImproved
 
         public void PolicemanCheckAction()
         {
-            var activeCitizens = Citizens.Where(x => x.IsActive).ToList();
-            var policeman = activeCitizens.FirstOrDefault(x => x.Function == Function.PoliceOfficer);
-            if (policeman is null)
+            var activeCitizens = Citizens
+                .Where(x => x.IsActive
+                            && x.Function!=Function.PoliceOfficer
+                            && !_policeCheckings.Keys.Contains(x.Name))
+                .ToList();
+            var policeman = Citizens.FirstOrDefault(x => x.Function == Function.PoliceOfficer);
+            if (!policeman.IsActive)
             {
                 return;
             }
-            var sumOfRelationFactor = policeman.RelationFactor.Values.Sum(x=>1/x);
+
+            var possibleRelations = policeman.RelationFactor
+                .Where(x => activeCitizens.Exists(y => y.Name == x.Key));
+            var sumOfRelationFactor = possibleRelations.Sum(x=> 1/x.Value);
             while (true && _policeCheckings.Count != policeman.RelationFactor.Count)
             {
                 var randomIndexRelation = _random.NextDouble() * sumOfRelationFactor;
                 var currentValueSave = 0.0;
-                foreach (var c in policeman.RelationFactor)
+                foreach (var c in possibleRelations)
                 {
-                    currentValueSave += c.Value;
+                    currentValueSave += 1/c.Value;
                     if (currentValueSave > randomIndexRelation)
                     {
-                        var selectedCitizen = activeCitizens.FirstOrDefault(x => x.Name == c.Key);
+                        var selectedCitizen = Citizens.FirstOrDefault(x => x.Name == c.Key);
                         if (selectedCitizen.Function == Function.Mafia)
                         {
                             policeman.RelationFactor[selectedCitizen.Name] = 0;
