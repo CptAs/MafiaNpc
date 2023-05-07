@@ -396,14 +396,17 @@ namespace MafiaNpc.MafiaImproved
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name).ToList();
             foreach (var citizen in activeCitizens)
             {
-                var randomIndex = _random.Next(1, 100);
-                if (randomIndex > 50)
+                var feelSorryEffectProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                    0, 0, 1, 1, -1);
+
+                var randomIndex = _random.Next(1, 100) * feelSorryEffectProbabilityCharacterCoefficient;
+                if (randomIndex < 50)
                 {
-                    citizen.ChangeRelationFactor(source.Name, -30);
+                    citizen.ChangeRelationFactor(source.Name, -30 * feelSorryEffectProbabilityCharacterCoefficient);
                 }
                 else
                 {
-                    citizen.ChangeRelationFactor(source.Name, 50);
+                    citizen.ChangeRelationFactor(source.Name, 50 * feelSorryEffectProbabilityCharacterCoefficient);
                 }
             }
             
@@ -416,7 +419,9 @@ namespace MafiaNpc.MafiaImproved
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name).ToList();
             foreach (var citizen in activeCitizens)
             {
-                citizen.ChangeRelationFactor(source.Name, 10);
+                var smallTalkEffectCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                    0, 0, 0, 1, -1);
+                citizen.ChangeRelationFactor(source.Name, 10 * smallTalkEffectCharacterCoefficient);
             }
 
             source.ChangeKillingProbability(-30);
