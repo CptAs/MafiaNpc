@@ -71,6 +71,18 @@ namespace MafiaNpc.MafiaImproved
             _openAiApi = new OpenAIAPI(key);
         }
 
+        public string GetAnswerFromChatGpt(string question)
+        {
+            var completions = _openAiApi.Completions.CreateCompletionAsync(
+                prompt: question,
+                model: "text-davinci-002",
+                max_tokens: 100,
+                temperature: 0.5f
+            );
+
+            return completions.Result.Completions.FirstOrDefault().Text;
+        }
+
         public void GenerateMafia()
         {
             for (int i = 0; i < NumberOfMafia; i++)
