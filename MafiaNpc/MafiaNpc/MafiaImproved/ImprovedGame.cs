@@ -161,6 +161,34 @@ namespace MafiaNpc.MafiaImproved
                 }
             }
         }
+        
+        public double GenerateCharacterCoefficient(BigFivePersonalityTraits character, double opennessCoefficient, 
+            double conscientiousnessCoefficient, double extraversionCoefficient, 
+            double agreeablenessCoefficient, double neuroticismCoefficient)
+            {
+                var coefficient = (opennessCoefficient * character.Openness) 
+                                                               + (conscientiousnessCoefficient * character.Conscientiousness)
+                                                               + (extraversionCoefficient * character.Extraversion)
+                                                               + (agreeablenessCoefficient * character.Agreeableness)
+                                                               + (neuroticismCoefficient * character.Neuroticism);
+                var maximumCoefficient = 0.0;
+                var minimumCoefficient = 0.0;
+                maximumCoefficient += opennessCoefficient > 0 ? opennessCoefficient * 100 : opennessCoefficient * 0;
+                maximumCoefficient += conscientiousnessCoefficient > 0 ? conscientiousnessCoefficient * 100 : conscientiousnessCoefficient * 0;
+                maximumCoefficient += extraversionCoefficient > 0 ? extraversionCoefficient * 100 : extraversionCoefficient * 0;
+                maximumCoefficient += agreeablenessCoefficient > 0 ? agreeablenessCoefficient * 100 : agreeablenessCoefficient * 0;
+                maximumCoefficient += neuroticismCoefficient > 0 ? neuroticismCoefficient * 100 : neuroticismCoefficient * 0;
+                minimumCoefficient += opennessCoefficient < 0 ? opennessCoefficient * 100 : opennessCoefficient * 0;
+                minimumCoefficient += conscientiousnessCoefficient < 0 ? conscientiousnessCoefficient * 100 : conscientiousnessCoefficient * 0;
+                minimumCoefficient += extraversionCoefficient < 0 ? extraversionCoefficient * 100 : extraversionCoefficient * 0;
+                minimumCoefficient += agreeablenessCoefficient < 0 ? agreeablenessCoefficient * 100 : agreeablenessCoefficient * 0;
+                minimumCoefficient += neuroticismCoefficient < 0 ? neuroticismCoefficient * 100 : neuroticismCoefficient * 0;
+
+                var oldRange = maximumCoefficient - minimumCoefficient;
+                var scaledValue = (((coefficient - minimumCoefficient) * 2.0) / oldRange);
+
+                return scaledValue;
+            }
 
         public List<ExecuteAction> GenerateActions()
         {
@@ -168,48 +196,57 @@ namespace MafiaNpc.MafiaImproved
             var activeCitizens = Citizens.Where(x => x.IsActive);
             foreach (var citizen in activeCitizens)
             {
+                var smallTalkProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                    1, -1, 2, 0.5, 0);
                 actions.Add(new ExecuteAction
                 {
                     Action = Action.SmallTalk,
                     SourceName = citizen.Name,
                     TargetName = null,
-                    Probability = 20
+                    Probability = 20 * smallTalkProbabilityCharacterCoefficient
                 });
+                var feelSorryForYourselfProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                    1, -1, 1, -0.5, 0);
                 actions.Add(new ExecuteAction
                 {
                     Action = Action.FeelSorryForYourself,
                     SourceName = citizen.Name,
                     TargetName = null,
-                    Probability = 20
+                    Probability = 20 * feelSorryForYourselfProbabilityCharacterCoefficient
                 });
                 foreach (var target in activeCitizens.Where(x=> x.Name != citizen.Name))
-                {
+                {   
+                    var accuseProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                        1, 1, 1, -2, 0);
                     actions.Add(new ExecuteAction
                     {
                         Action = Action.Accuse,
                         SourceName = citizen.Name,
                         TargetName = target.Name,
-                        Probability = 100 - citizen.RelationFactor[target.Name]
+                        Probability = (100 - citizen.RelationFactor[target.Name]) * accuseProbabilityCharacterCoefficient
                     });
-                    
+                    var defendProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                        1, 0.5, 1, 2, 0);
                     actions.Add(new ExecuteAction
                     {
                         Action = Action.Defend,
                         SourceName = citizen.Name,
                         TargetName = target.Name,
-                        Probability = citizen.RelationFactor[target.Name]
+                        Probability = (citizen.RelationFactor[target.Name]) * defendProbabilityCharacterCoefficient
                     });
 
                     if (citizen.RelationFactor[target.Name] > 80 && 
                         !_collaborators.Keys.Contains(citizen.Name) && 
                         !_collaborators.Keys.Contains(target.Name) )
                     {
+                        var collaborationProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                            1, -2, 1, 2, 0);
                         actions.Add(new ExecuteAction
                         {
                             Action = Action.Collaborate,
                             SourceName = citizen.Name,
                             TargetName = target.Name,
-                            Probability = citizen.RelationFactor[target.Name] / 2
+                            Probability = (citizen.RelationFactor[target.Name] / 2) * collaborationProbabilityCharacterCoefficient
                         });
                     }
                 }
