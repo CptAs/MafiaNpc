@@ -14,3 +14,16 @@ C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.dll
 C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\ref\MafiaNpc.dll
 C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.pdb
 C:\Users\User\Desktop\MafiaNPC\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.genruntimeconfig.cache
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Configuration.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Http.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Logging.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Options.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Microsoft.Extensions.Primitives.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\Newtonsoft.Json.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\bin\Debug\net5.0\OpenAI_API.dll
+C:\Users\User\Desktop\MafiaNpc\MafiaNpc\MafiaNpc\obj\Debug\net5.0\MafiaNpc.csproj.CopyComplete

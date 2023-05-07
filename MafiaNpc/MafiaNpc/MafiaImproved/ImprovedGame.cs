@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using OpenAI_API;
 
 namespace MafiaNpc.MafiaImproved
 {
@@ -30,6 +32,7 @@ namespace MafiaNpc.MafiaImproved
         private string _savedPerson;
         private Dictionary<string, bool> _policeCheckings;
         private Dictionary<string, string> _collaborators;
+        private OpenAIAPI _openAiApi;
 
         public ImprovedGame(int numberOfCitizens, int numberOfMafia, int numberOfTurns)
         {
@@ -52,7 +55,20 @@ namespace MafiaNpc.MafiaImproved
             AssignRoles();
             GenerateExileProbability();
             Citizens = Citizens.OrderBy(a => _random.Next()).ToList();
-            
+            Console.WriteLine("Generated citizens: ");
+            foreach (var citizen in Citizens)
+            {
+                var message = "Citizen " + citizen.Name + ", role: " + citizen.Function
+                              + "\nOpenness: " + citizen.Character.Openness
+                              + "\nAgreeableness: " + citizen.Character.Agreeableness
+                              + "\nExtraversion: " + citizen.Character.Extraversion
+                              + "\nConscientiousness: " + citizen.Character.Conscientiousness
+                              + "\nNeuroticism: " + citizen.Character.Neuroticism;
+                Console.WriteLine(message);
+            }
+
+            var key = File.ReadAllText("../../../OpenAiSecretKey.txt");
+            _openAiApi = new OpenAIAPI(key);
         }
 
         public void GenerateMafia()
