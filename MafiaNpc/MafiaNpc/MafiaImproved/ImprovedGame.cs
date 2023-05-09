@@ -95,7 +95,13 @@ namespace MafiaNpc.MafiaImproved
                     Conscientiousness = _random.Next(100),
                     Neuroticism = _random.Next(100),
                 };
-                Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia, character));
+                var emotions = new PadEmotionalModel
+                {
+                    Pleasure = _random.NextDouble() * 2 - 1,
+                    Arousal = _random.NextDouble() * 2 - 1,
+                    Dominance = _random.NextDouble() * 2 - 1,
+                };
+                Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia, character, emotions));
             }
         }
         public void GenerateCitizens()
@@ -110,7 +116,13 @@ namespace MafiaNpc.MafiaImproved
                     Conscientiousness = _random.Next(100),
                     Neuroticism = _random.Next(100),
                 };
-                Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen, character));
+                var emotions = new PadEmotionalModel
+                {
+                    Pleasure = _random.NextDouble() * 2 - 1,
+                    Arousal = _random.NextDouble() * 2 - 1,
+                    Dominance = _random.NextDouble() * 2 - 1,
+                };
+                Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen, character, emotions));
             }
         }
 
@@ -217,7 +229,7 @@ namespace MafiaNpc.MafiaImproved
                 foreach (var target in activeCitizens.Where(x=> x.Name != citizen.Name))
                 {   
                     var accuseProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
-                        1, 1, 1, -2, 0);
+                        1, 2, 1, -2, 0);
                     actions.Add(new ExecuteAction
                     {
                         Action = Action.Accuse,
@@ -226,7 +238,7 @@ namespace MafiaNpc.MafiaImproved
                         Probability = (100 - citizen.RelationFactor[target.Name]) * accuseProbabilityCharacterCoefficient
                     });
                     var defendProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
-                        1, 0.5, 1, 2, 0);
+                        1, 1, 1, 2, 0);
                     actions.Add(new ExecuteAction
                     {
                         Action = Action.Defend,
@@ -326,7 +338,7 @@ namespace MafiaNpc.MafiaImproved
             {
                 return;
             }
-            while (true && _policeCheckings.Count != policeman.RelationFactor.Count)
+            while (_policeCheckings.Count != policeman.RelationFactor.Count)
             {
                 var randomIndexRelation = _random.NextDouble() * sumOfRelationFactor;
                 var currentValueSave = 0.0;
@@ -438,13 +450,17 @@ namespace MafiaNpc.MafiaImproved
                 target.KillingProbability += -10;
                 return;
             }
-            var sourceRelationFactor = source.RelationFactor[target.Name];
-            var targetRelationFactor = target.RelationFactor[source.Name];
+            var sourceCharacterCoefficient = GenerateCharacterCoefficient(source.Character, 
+                1, -1, 1, 2, -0.5);
+            var targetCharacterCoefficient = GenerateCharacterCoefficient(target.Character, 
+                1, -1, 1, 2, -0.5);
+            var sourceRelationFactor = source.RelationFactor[target.Name] * sourceCharacterCoefficient;
+            var targetRelationFactor = target.RelationFactor[source.Name] * targetCharacterCoefficient;
             var randomIndex = _random.NextDouble() * 200;
             if (randomIndex > sourceRelationFactor + targetRelationFactor)
             {
-                source.ChangeRelationFactor(target.Name, -20);
-                target.ChangeRelationFactor(source.Name, 10);
+                source.ChangeRelationFactor(target.Name, -20 * sourceRelationFactor);
+                target.ChangeRelationFactor(source.Name, 10 * targetRelationFactor);
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
                 target.ChangeKillingProbability(-10);
             }
@@ -466,16 +482,18 @@ namespace MafiaNpc.MafiaImproved
             target.ChangeRelationFactor(source.Name, -20);
             foreach (var citizen in activeCitizens)
             {
+                var citizenCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                    1, 1, 0, -1, 1);
                 var randomIndex = _random.NextDouble() * 100;
-                randomIndex += citizen.RelationFactor[source.Name];
-                randomIndex += -citizen.RelationFactor[target.Name];
+                randomIndex += citizen.RelationFactor[source.Name] * citizenCharacterCoefficient;
+                randomIndex += -citizen.RelationFactor[target.Name] * citizenCharacterCoefficient;
                 if (randomIndex > 50)
                 {
-                    citizen.ChangeRelationFactor(target.Name, -20);
+                    citizen.ChangeRelationFactor(target.Name, -20 * citizenCharacterCoefficient);
                 }
                 else
                 {
-                    citizen.ChangeRelationFactor(source.Name, -10);
+                    citizen.ChangeRelationFactor(source.Name, -10 * citizenCharacterCoefficient);
                 }
             }
 
@@ -491,18 +509,20 @@ namespace MafiaNpc.MafiaImproved
             target.ChangeRelationFactor(source.Name, 20);
             foreach (var citizen in activeCitizens)
             {
+                var citizenCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
+                    1, 1, 0, 1, 1);
                 var randomIndex = _random.NextDouble() * 100;
-                randomIndex += -(20/citizen.RelationFactor[source.Name]);
-                randomIndex += -(20/citizen.RelationFactor[target.Name]);
+                randomIndex += -(20/(citizen.RelationFactor[source.Name] * citizenCharacterCoefficient));
+                randomIndex += -(20/(citizen.RelationFactor[target.Name] * citizenCharacterCoefficient));
                 if (randomIndex < 70)
                 {
-                    citizen.ChangeRelationFactor(target.Name, 20);
-                    citizen.ChangeRelationFactor(source.Name, 10);
+                    citizen.ChangeRelationFactor(target.Name, 20 * citizenCharacterCoefficient);
+                    citizen.ChangeRelationFactor(source.Name, 10 * citizenCharacterCoefficient);
                 }
                 else
                 {
-                    citizen.ChangeRelationFactor(source.Name, -20);
-                    citizen.ChangeRelationFactor(target.Name, -10);
+                    citizen.ChangeRelationFactor(source.Name, -20 * citizenCharacterCoefficient);
+                    citizen.ChangeRelationFactor(target.Name, -10 * citizenCharacterCoefficient);
                 }
             }
 

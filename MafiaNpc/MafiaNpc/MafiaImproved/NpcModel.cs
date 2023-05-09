@@ -21,6 +21,14 @@ namespace MafiaNpc.MafiaImproved
         public double Agreeableness;
         public double Neuroticism;
     }
+
+    public class PadEmotionalModel
+    {
+        public double Pleasure;
+        public double Arousal;
+        public double Dominance;
+    }
+    
     public class NpcModel
     {
         public string Name { get; set; }
@@ -29,9 +37,11 @@ namespace MafiaNpc.MafiaImproved
         public bool IsActive { get; set; }
         public Function Function { get; set; }
         public BigFivePersonalityTraits Character { get; set; }
+        public PadEmotionalModel EmotionalModel { get; set; }
         private Random _random;
 
-        public NpcModel(string name, double killingProbability, Function function, BigFivePersonalityTraits character)
+        public NpcModel(string name, double killingProbability, Function function, 
+            BigFivePersonalityTraits character, PadEmotionalModel emotionalModel)
         {
             Name = name;
             KillingProbability = killingProbability;
@@ -40,6 +50,7 @@ namespace MafiaNpc.MafiaImproved
             IsActive = true;
             _random = new Random();
             Character = character;
+            EmotionalModel = emotionalModel;
         }
 
         public string Vote(List<string> activeCitizens)
