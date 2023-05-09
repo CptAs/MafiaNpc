@@ -76,7 +76,7 @@ namespace MafiaNpc.MafiaImproved
             var completions = _openAiApi.Completions.CreateCompletionAsync(
                 prompt: question,
                 model: "text-davinci-002",
-                max_tokens: 100,
+                max_tokens: 200,
                 temperature: 0.5f
             );
 
@@ -405,6 +405,11 @@ namespace MafiaNpc.MafiaImproved
         public void FeelSorryForYourselfAction(NpcModel source)
         {
             Console.WriteLine($"{source.Name} feels sorry for self");
+            var message = GetAnswerFromChatGpt("Generate response for person with character defined by " +
+                                               $"Big Five Personality traits with coefficients: Openness - {source.Character.Openness}, Conscientiousness - {source.Character.Conscientiousness}" +
+                                               $", Extraversion - {source.Character.Extraversion}, Agreeableness - {source.Character.Agreeableness}, " +
+                                               $"Agreeableness - {source.Character.Agreeableness}. In response person should feel sorry for himself because other people thinks that he is mafia.");
+            Console.WriteLine(message);
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name).ToList();
             foreach (var citizen in activeCitizens)
             {
