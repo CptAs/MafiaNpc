@@ -25,7 +25,7 @@ namespace MafiaNpc.MafiaImproved
         public Emotion BaseEmotion { get; private set; }
 
         public Dictionary<Emotion, (double, double, double)> EmotionsPadValues =
-            new Dictionary<Emotion, (double, double, double)>
+            new()
             {
                 { Emotion.Angry, (-.51, .59, .25) },
                 { Emotion.Bored, (-.65, -.62, -.33) },
@@ -55,40 +55,6 @@ namespace MafiaNpc.MafiaImproved
             var arousal = padEmotions.Sum(x => x.Item2) / padEmotions.Count;
             var dominance = padEmotions.Sum(x => x.Item3) / padEmotions.Count;
             return GetEmotionFromPadValues((pleasure, arousal, dominance));
-
-        }
-
-        private (double, double, double) GetPadValuesFromEmotion(Emotion emotion)
-        {
-            switch (emotion)
-            {
-                case Emotion.Angry:
-                    return (-.51, .59, .25);
-                case Emotion.Bored:
-                    return (-.65, -.62, -.33);
-                case Emotion.Curious:
-                    return (.22, .62, -.01);
-                case Emotion.Dignified:
-                    return (.55, .22, .61);
-                case Emotion.Elated:
-                    return (.50, .42, .23);
-                case Emotion.Hungry:
-                    return (-.44, .14, -.21);
-                case Emotion.Inhibited:
-                    return (-.54, -.04, -.41);
-                case Emotion.Loved:
-                    return (.87, .54, -.18);
-                case Emotion.Puzzled:
-                    return (-.41, .48, -.33);
-                case Emotion.Sleepy:
-                    return (.20, -.70, -.44);
-                case Emotion.Unconcerned:
-                    return (-.13, -.41, .08);
-                case Emotion.Violent:
-                    return (-.50, .62, .38);
-            }
-
-            return (0, 0, 0);
         }
 
         private Emotion GetEmotionFromPadValues((double, double, double) padValues)

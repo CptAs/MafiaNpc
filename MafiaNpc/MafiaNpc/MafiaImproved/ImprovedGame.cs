@@ -38,6 +38,7 @@ namespace MafiaNpc.MafiaImproved
         private Dictionary<string, bool> _policeCheckings;
         private Dictionary<string, string> _collaborators;
         private OpenAIAPI _openAiApi;
+        private int _forgetCoefficient = 10;
 
         public ImprovedGame(int numberOfCitizens, int numberOfMafia, int numberOfTurns)
         {
@@ -459,11 +460,28 @@ namespace MafiaNpc.MafiaImproved
                 var randomIndex = _random.Next(1, 100) * feelSorryEffectProbabilityCharacterCoefficient;
                 if (randomIndex < 50)
                 {
+                    var possibleEmotions = new[] { Emotion.Bored, Emotion.Inhibited, Emotion.Puzzled, Emotion.Unconcerned, Emotion.Angry };
                     citizen.ChangeRelationFactor(source.Name, -30 * feelSorryEffectProbabilityCharacterCoefficient);
+                    citizen.Memories.Add(new Memory
+                    {
+                        ActionType = Action.FeelSorryForYourself,
+                        ActorName = source.Name,
+                        Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                        TimeToForget = _forgetCoefficient
+                    });
                 }
                 else
                 {
+                    var possibleEmotions = new[]
+                        { Emotion.Curious, Emotion.Loved, Emotion.Elated, Emotion.Unconcerned };
                     citizen.ChangeRelationFactor(source.Name, 50 * feelSorryEffectProbabilityCharacterCoefficient);
+                    citizen.Memories.Add(new Memory
+                    {
+                        ActionType = Action.FeelSorryForYourself,
+                        ActorName = source.Name,
+                        Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                        TimeToForget = _forgetCoefficient
+                    });
                 }
             }
             
@@ -483,9 +501,18 @@ namespace MafiaNpc.MafiaImproved
             var activeCitizens = Citizens.Where(x => x.IsActive && x.Name != source.Name).ToList();
             foreach (var citizen in activeCitizens)
             {
+                var possibleEmotions = new[]
+                    { Emotion.Bored, Emotion.Curious, Emotion.Inhibited, Emotion.Puzzled, Emotion.Unconcerned };
                 var smallTalkEffectCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
                     0, 0, 0, 1, -1);
                 citizen.ChangeRelationFactor(source.Name, 10 * smallTalkEffectCharacterCoefficient);
+                citizen.Memories.Add(new Memory
+                {
+                    ActionType = Action.FeelSorryForYourself,
+                    ActorName = source.Name,
+                    Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                    TimeToForget = _forgetCoefficient
+                });
             }
 
             source.ChangeKillingProbability(-30);
@@ -529,6 +556,21 @@ namespace MafiaNpc.MafiaImproved
                     Source = source,
                     Target = target
                 });
+                var possibleEmotions = new[] { Emotion.Angry, Emotion.Violent, Emotion.Inhibited };
+                target.Memories.Add(new Memory
+                {
+                    ActionType = Action.FeelSorryForYourself,
+                    ActorName = source.Name,
+                    Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                    TimeToForget = _forgetCoefficient
+                });
+                source.Memories.Add(new Memory
+                {
+                    ActionType = Action.FeelSorryForYourself,
+                    ActorName = source.Name,
+                    Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                    TimeToForget = _forgetCoefficient
+                });
             }
             else
             {
@@ -543,6 +585,21 @@ namespace MafiaNpc.MafiaImproved
                     IsSuccessful = true,
                     Source = source,
                     Target = target
+                });
+                var possibleEmotions = new[] { Emotion.Dignified, Emotion.Elated, Emotion.Loved};
+                target.Memories.Add(new Memory
+                {
+                    ActionType = Action.FeelSorryForYourself,
+                    ActorName = source.Name,
+                    Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                    TimeToForget = _forgetCoefficient
+                });
+                source.Memories.Add(new Memory
+                {
+                    ActionType = Action.FeelSorryForYourself,
+                    ActorName = source.Name,
+                    Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                    TimeToForget = _forgetCoefficient
                 });
             }
         }
@@ -579,6 +636,14 @@ namespace MafiaNpc.MafiaImproved
                 Source = source,
                 Target = target
             });
+            var possibleEmotions = new[] { Emotion.Angry, Emotion.Violent, Emotion.Puzzled,Emotion.Inhibited};
+            source.Memories.Add(new Memory
+            {
+                ActionType = Action.FeelSorryForYourself,
+                ActorName = source.Name,
+                Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                TimeToForget = _forgetCoefficient
+            });
         }
 
         public void DefendAction(NpcModel source, NpcModel target)
@@ -614,6 +679,14 @@ namespace MafiaNpc.MafiaImproved
                 IsSuccessful = true,
                 Source = source,
                 Target = target
+            });
+            var possibleEmotions = new[] { Emotion.Dignified, Emotion.Elated, Emotion.Loved, Emotion.Puzzled};
+            source.Memories.Add(new Memory
+            {
+                ActionType = Action.FeelSorryForYourself,
+                ActorName = source.Name,
+                Emotion = (Emotion) possibleEmotions.GetValue(_random.Next(possibleEmotions.Length)),
+                TimeToForget = _forgetCoefficient
             });
         }
 

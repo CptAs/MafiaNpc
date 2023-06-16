@@ -93,5 +93,10 @@ namespace MafiaNpc.MafiaImproved
                 KillingProbability = 0;
             }
         }
+
+        public Emotion GetCurrentEmotionalState()
+        {
+            return EmotionalModel.CalculateEmotionalState(Memories);
+        }
     }
 }
