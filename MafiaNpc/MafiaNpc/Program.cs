@@ -61,6 +61,7 @@ namespace MafiaNpc
                 game.DoctorSaveAction();
                 game.PolicemanCheckAction();
                 game.MafiaKillingAction();
+                var mem = new Memory();
             }
         }
     }

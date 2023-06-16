@@ -12,7 +12,11 @@ namespace MafiaNpc.MafiaImproved
         Defend,
         SmallTalk,
         Collaborate,
-        FeelSorryForYourself
+        FeelSorryForYourself,
+        Kill,
+        Save,
+        Check,
+        Hunt
     }
     public class ExecuteAction
     {
@@ -28,6 +32,7 @@ namespace MafiaNpc.MafiaImproved
         public int NumberOfTurns { get; set; }
         public List<NpcModel> Citizens { get; set; }
         public List<string> Names { get; set; }
+        public List<Event> Events { get; set; }
         private Random _random;
         private string _savedPerson;
         private Dictionary<string, bool> _policeCheckings;
@@ -63,12 +68,14 @@ namespace MafiaNpc.MafiaImproved
                               + "\nAgreeableness: " + citizen.Character.Agreeableness
                               + "\nExtraversion: " + citizen.Character.Extraversion
                               + "\nConscientiousness: " + citizen.Character.Conscientiousness
-                              + "\nNeuroticism: " + citizen.Character.Neuroticism;
+                              + "\nNeuroticism: " + citizen.Character.Neuroticism
+                              + "\nEmotion: " + citizen.EmotionalModel.Emotion;
                 Console.WriteLine(message);
             }
 
             var key = File.ReadAllText("../../../OpenAiSecretKey.txt");
             _openAiApi = new OpenAIAPI(key);
+            Events = new List<Event>();
         }
 
         public string GetAnswerFromChatGpt(string question)
@@ -95,12 +102,7 @@ namespace MafiaNpc.MafiaImproved
                     Conscientiousness = _random.Next(100),
                     Neuroticism = _random.Next(100),
                 };
-                var emotions = new PadEmotionalModel
-                {
-                    Pleasure = _random.NextDouble() * 2 - 1,
-                    Arousal = _random.NextDouble() * 2 - 1,
-                    Dominance = _random.NextDouble() * 2 - 1,
-                };
+                var emotions = new PadEmotionalModel(_random.NextDouble(),_random.NextDouble(),_random.NextDouble());
                 Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia, character, emotions));
             }
         }
@@ -116,12 +118,7 @@ namespace MafiaNpc.MafiaImproved
                     Conscientiousness = _random.Next(100),
                     Neuroticism = _random.Next(100),
                 };
-                var emotions = new PadEmotionalModel
-                {
-                    Pleasure = _random.NextDouble() * 2 - 1,
-                    Arousal = _random.NextDouble() * 2 - 1,
-                    Dominance = _random.NextDouble() * 2 - 1,
-                };
+                var emotions = new PadEmotionalModel(_random.NextDouble(),_random.NextDouble(),_random.NextDouble());
                 Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen, character, emotions));
             }
         }
@@ -283,10 +280,24 @@ namespace MafiaNpc.MafiaImproved
                     {
                         ExileAction(c);
                         Console.WriteLine($"{c.Name} was killed that night");
+                        Events.Add(new Event
+                        {
+                            Action = Action.Kill,
+                            IsSuccessful = true,
+                            Source = null,
+                            Target = c
+                        });
                     }
                     else
                     {
                         Console.WriteLine($"{c.Name} was saved by doctor that night");
+                        Events.Add(new Event
+                        {
+                            Action = Action.Kill,
+                            IsSuccessful = false,
+                            Source = null,
+                            Target = c
+                        });
                     }
                     return;
                 }
@@ -313,6 +324,13 @@ namespace MafiaNpc.MafiaImproved
                 {
                     _savedPerson = c.Key;
                     Console.WriteLine($"{c.Key} was selected for save that night");
+                    Events.Add(new Event
+                    {
+                        Action = Action.Save,
+                        IsSuccessful = true,
+                        Source = doctor,
+                        Target = activeCitizens.First(x=>x.Name == c.Key)
+                    });
                     return;
                 }
             }
@@ -353,12 +371,26 @@ namespace MafiaNpc.MafiaImproved
                             policeman.RelationFactor[selectedCitizen.Name] = 0;
                             _policeCheckings.Add(selectedCitizen.Name, true);
                             Console.WriteLine($"{c.Key} was selected for check that night and turn out to be mafia");
+                            Events.Add(new Event
+                            {
+                                Action = Action.Check,
+                                IsSuccessful = true,
+                                Source = policeman,
+                                Target = activeCitizens.First(x=>x.Name == c.Key)
+                            });
                         }
                         else
                         {
                             policeman.RelationFactor[selectedCitizen.Name] = 100;
                             _policeCheckings.Add(selectedCitizen.Name, false);
                             Console.WriteLine($"{c.Key} was selected for check that night and turn out to be citizen");
+                            Events.Add(new Event
+                            {
+                                Action = Action.Check,
+                                IsSuccessful = false,
+                                Source = policeman,
+                                Target = activeCitizens.First(x=>x.Name == c.Key)
+                            });
                         }
                         
                         return;
@@ -387,7 +419,13 @@ namespace MafiaNpc.MafiaImproved
                     var selectedCitizen = activeCitizens.FirstOrDefault(x => x.Name == c.Key);
                     ExileAction(selectedCitizen);
                     Console.WriteLine($"{c.Key} was selected by hunter to be also killed");
-                    
+                    Events.Add(new Event
+                    {
+                        Action = Action.Hunt,
+                        IsSuccessful = true,
+                        Source = hunter,
+                        Target = activeCitizens.First(x=>x.Name == c.Key)
+                    });
                     return;
                 }
             }
@@ -428,6 +466,13 @@ namespace MafiaNpc.MafiaImproved
             }
             
             source.ChangeKillingProbability(10);
+            Events.Add(new Event
+            {
+                Action = Action.FeelSorryForYourself,
+                IsSuccessful = true,
+                Source = source,
+                Target = null
+            });
         }
 
         public void SmallTalkAction(NpcModel source)
@@ -442,6 +487,13 @@ namespace MafiaNpc.MafiaImproved
             }
 
             source.ChangeKillingProbability(-30);
+            Events.Add(new Event
+            {
+                Action = Action.SmallTalk,
+                IsSuccessful = true,
+                Source = source,
+                Target = null
+            });
         }
 
         public void CollaborateAction(NpcModel source, NpcModel target)
@@ -468,6 +520,13 @@ namespace MafiaNpc.MafiaImproved
                 target.ChangeRelationFactor(source.Name, 10 * targetRelationFactor);
                 Console.WriteLine($"{target.Name} doesn't want to collaborate with {source.Name}");
                 target.ChangeKillingProbability(-10);
+                Events.Add(new Event
+                {
+                    Action = Action.Collaborate,
+                    IsSuccessful = false,
+                    Source = source,
+                    Target = target
+                });
             }
             else
             {
@@ -476,6 +535,13 @@ namespace MafiaNpc.MafiaImproved
                 _collaborators.Add(source.Name, target.Name);
                 Console.WriteLine($"{target.Name} wants to collaborate with {source.Name}");
                 target.ChangeKillingProbability(20);
+                Events.Add(new Event
+                {
+                    Action = Action.Collaborate,
+                    IsSuccessful = true,
+                    Source = source,
+                    Target = target
+                });
             }
         }
 
@@ -504,6 +570,13 @@ namespace MafiaNpc.MafiaImproved
 
             source.ChangeKillingProbability(10);
             target.ChangeKillingProbability(20);
+            Events.Add(new Event
+            {
+                Action = Action.Accuse,
+                IsSuccessful = true,
+                Source = source,
+                Target = target
+            });
         }
 
         public void DefendAction(NpcModel source, NpcModel target)
@@ -533,6 +606,13 @@ namespace MafiaNpc.MafiaImproved
 
             source.ChangeKillingProbability(20);
             target.ChangeKillingProbability(10);
+            Events.Add(new Event
+            {
+                Action = Action.Defend,
+                IsSuccessful = true,
+                Source = source,
+                Target = target
+            });
         }
 
         public bool DoDayTurn()

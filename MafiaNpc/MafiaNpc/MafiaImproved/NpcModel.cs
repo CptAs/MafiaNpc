@@ -22,13 +22,6 @@ namespace MafiaNpc.MafiaImproved
         public double Neuroticism;
     }
 
-    public class PadEmotionalModel
-    {
-        public double Pleasure;
-        public double Arousal;
-        public double Dominance;
-    }
-    
     public class NpcModel
     {
         public string Name { get; set; }
@@ -38,7 +31,8 @@ namespace MafiaNpc.MafiaImproved
         public Function Function { get; set; }
         public BigFivePersonalityTraits Character { get; set; }
         public PadEmotionalModel EmotionalModel { get; set; }
-        private Random _random;
+        public List<Memory> Memories { get; set; }
+        private readonly Random _random;
 
         public NpcModel(string name, double killingProbability, Function function, 
             BigFivePersonalityTraits character, PadEmotionalModel emotionalModel)
