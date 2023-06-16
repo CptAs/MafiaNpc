@@ -40,6 +40,71 @@ namespace MafiaNpc.MafiaImproved
         private OpenAIAPI _openAiApi;
         private int _forgetCoefficient = 10;
 
+        private Dictionary<(Action, Emotion), double> _emotionCoefficientForActions =
+            new ()
+            {
+                {(Action.Accuse, Emotion.Angry), 1.5},
+                {(Action.Accuse, Emotion.Bored), 0.7},
+                {(Action.Accuse, Emotion.Curious), 1.1},
+                {(Action.Accuse, Emotion.Dignified), 0.5},
+                {(Action.Accuse, Emotion.Elated), 0.1},
+                {(Action.Accuse, Emotion.Hungry), 1},
+                {(Action.Accuse, Emotion.Inhibited), 1.2},
+                {(Action.Accuse, Emotion.Loved), 0.2},
+                {(Action.Accuse, Emotion.Puzzled), 1},
+                {(Action.Accuse, Emotion.Sleepy), 0.5},
+                {(Action.Accuse, Emotion.Unconcerned), 1},
+                {(Action.Accuse, Emotion.Violent), 2.0},
+                {(Action.Defend, Emotion.Angry), 0.2},
+                {(Action.Defend, Emotion.Bored), 1.1},
+                {(Action.Defend, Emotion.Curious), 1.1},
+                {(Action.Defend, Emotion.Dignified), 1.5},
+                {(Action.Defend, Emotion.Elated), 1.8},
+                {(Action.Defend, Emotion.Hungry), 1},
+                {(Action.Defend, Emotion.Inhibited), 0.8},
+                {(Action.Defend, Emotion.Loved), 1.7},
+                {(Action.Defend, Emotion.Puzzled), 1},
+                {(Action.Defend, Emotion.Sleepy), 0.5},
+                {(Action.Defend, Emotion.Unconcerned), 1},
+                {(Action.Defend, Emotion.Violent), 0.1},
+                {(Action.SmallTalk, Emotion.Angry), 0.2},
+                {(Action.SmallTalk, Emotion.Bored), 1.8},
+                {(Action.SmallTalk, Emotion.Curious), 1.5},
+                {(Action.SmallTalk, Emotion.Dignified), 0.8},
+                {(Action.SmallTalk, Emotion.Elated), 0.4},
+                {(Action.SmallTalk, Emotion.Hungry), 1.2},
+                {(Action.SmallTalk, Emotion.Inhibited), 0.6},
+                {(Action.SmallTalk, Emotion.Loved), 0.7},
+                {(Action.SmallTalk, Emotion.Puzzled), 1.7},
+                {(Action.SmallTalk, Emotion.Sleepy), 1.5},
+                {(Action.SmallTalk, Emotion.Unconcerned), 0.5},
+                {(Action.SmallTalk, Emotion.Violent), 0.1},
+                {(Action.FeelSorryForYourself, Emotion.Angry), 0.8},
+                {(Action.FeelSorryForYourself, Emotion.Bored), 1},
+                {(Action.FeelSorryForYourself, Emotion.Curious), 1},
+                {(Action.FeelSorryForYourself, Emotion.Dignified), 0.1},
+                {(Action.FeelSorryForYourself, Emotion.Elated), 0.2},
+                {(Action.FeelSorryForYourself, Emotion.Hungry), 1.5},
+                {(Action.FeelSorryForYourself, Emotion.Inhibited), 1.2},
+                {(Action.FeelSorryForYourself, Emotion.Loved), 1.5},
+                {(Action.FeelSorryForYourself, Emotion.Puzzled), 1.7},
+                {(Action.FeelSorryForYourself, Emotion.Sleepy), 0.5},
+                {(Action.FeelSorryForYourself, Emotion.Unconcerned), 0.5},
+                {(Action.FeelSorryForYourself, Emotion.Violent), 0.1},
+                {(Action.Collaborate, Emotion.Angry), 0.5},
+                {(Action.Collaborate, Emotion.Bored), 1.2},
+                {(Action.Collaborate, Emotion.Curious), 1.5},
+                {(Action.Collaborate, Emotion.Dignified), 0.4},
+                {(Action.Collaborate, Emotion.Elated), 1.6},
+                {(Action.Collaborate, Emotion.Hungry), 1.5},
+                {(Action.Collaborate, Emotion.Inhibited), 0.6},
+                {(Action.Collaborate, Emotion.Loved), 1.6},
+                {(Action.Collaborate, Emotion.Puzzled), 0.6},
+                {(Action.Collaborate, Emotion.Sleepy), 0.5},
+                {(Action.Collaborate, Emotion.Unconcerned), 0.3},
+                {(Action.Collaborate, Emotion.Violent), 0.3}
+            };
+
         public ImprovedGame(int numberOfCitizens, int numberOfMafia, int numberOfTurns)
         {
             NumberOfCitizens = numberOfCitizens;
@@ -215,7 +280,7 @@ namespace MafiaNpc.MafiaImproved
                     Action = Action.SmallTalk,
                     SourceName = citizen.Name,
                     TargetName = null,
-                    Probability = 20 * smallTalkProbabilityCharacterCoefficient
+                    Probability = 20 * smallTalkProbabilityCharacterCoefficient * _emotionCoefficientForActions[(Action.SmallTalk, citizen.EmotionalModel.CalculateEmotionalState(citizen.Memories))]
                 });
                 var feelSorryForYourselfProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
                     1, -1, 1, -0.5, 0);
@@ -224,7 +289,7 @@ namespace MafiaNpc.MafiaImproved
                     Action = Action.FeelSorryForYourself,
                     SourceName = citizen.Name,
                     TargetName = null,
-                    Probability = 20 * feelSorryForYourselfProbabilityCharacterCoefficient
+                    Probability = 20 * feelSorryForYourselfProbabilityCharacterCoefficient * _emotionCoefficientForActions[(Action.SmallTalk, citizen.EmotionalModel.CalculateEmotionalState(citizen.Memories))]
                 });
                 foreach (var target in activeCitizens.Where(x=> x.Name != citizen.Name))
                 {   
@@ -235,7 +300,7 @@ namespace MafiaNpc.MafiaImproved
                         Action = Action.Accuse,
                         SourceName = citizen.Name,
                         TargetName = target.Name,
-                        Probability = (100 - citizen.RelationFactor[target.Name]) * accuseProbabilityCharacterCoefficient
+                        Probability = (100 - citizen.RelationFactor[target.Name]) * accuseProbabilityCharacterCoefficient * _emotionCoefficientForActions[(Action.SmallTalk, citizen.EmotionalModel.CalculateEmotionalState(citizen.Memories))]
                     });
                     var defendProbabilityCharacterCoefficient = GenerateCharacterCoefficient(citizen.Character, 
                         1, 1, 1, 2, 0);
@@ -244,7 +309,7 @@ namespace MafiaNpc.MafiaImproved
                         Action = Action.Defend,
                         SourceName = citizen.Name,
                         TargetName = target.Name,
-                        Probability = (citizen.RelationFactor[target.Name]) * defendProbabilityCharacterCoefficient
+                        Probability = (citizen.RelationFactor[target.Name]) * defendProbabilityCharacterCoefficient * _emotionCoefficientForActions[(Action.SmallTalk, citizen.EmotionalModel.CalculateEmotionalState(citizen.Memories))]
                     });
 
                     if (citizen.RelationFactor[target.Name] > 80 && 
@@ -258,7 +323,7 @@ namespace MafiaNpc.MafiaImproved
                             Action = Action.Collaborate,
                             SourceName = citizen.Name,
                             TargetName = target.Name,
-                            Probability = (citizen.RelationFactor[target.Name] / 2) * collaborationProbabilityCharacterCoefficient
+                            Probability = (citizen.RelationFactor[target.Name] / 2) * collaborationProbabilityCharacterCoefficient * _emotionCoefficientForActions[(Action.SmallTalk, citizen.EmotionalModel.CalculateEmotionalState(citizen.Memories))]
                         });
                     }
                 }
