@@ -69,7 +69,7 @@ namespace MafiaNpc.MafiaImproved
                               + "\nExtraversion: " + citizen.Character.Extraversion
                               + "\nConscientiousness: " + citizen.Character.Conscientiousness
                               + "\nNeuroticism: " + citizen.Character.Neuroticism
-                              + "\nEmotion: " + citizen.EmotionalModel.Emotion;
+                              + "\nEmotion: " + citizen.EmotionalModel.BaseEmotion;
                 Console.WriteLine(message);
             }
 
@@ -102,8 +102,9 @@ namespace MafiaNpc.MafiaImproved
                     Conscientiousness = _random.Next(100),
                     Neuroticism = _random.Next(100),
                 };
-                var emotions = new PadEmotionalModel(_random.NextDouble(),_random.NextDouble(),_random.NextDouble());
-                Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia, character, emotions));
+                var emotions = Enum.GetValues(typeof(Emotion));
+                var padModel = new PadEmotionalModel((Emotion)emotions.GetValue(_random.Next(emotions.Length))!);
+                Citizens.Add(new NpcModel(Names[i], 0, Function.Mafia, character, padModel));
             }
         }
         public void GenerateCitizens()
@@ -118,8 +119,9 @@ namespace MafiaNpc.MafiaImproved
                     Conscientiousness = _random.Next(100),
                     Neuroticism = _random.Next(100),
                 };
-                var emotions = new PadEmotionalModel(_random.NextDouble(),_random.NextDouble(),_random.NextDouble());
-                Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen, character, emotions));
+                var emotions = Enum.GetValues(typeof(Emotion));
+                var padModel = new PadEmotionalModel((Emotion)emotions.GetValue(_random.Next(emotions.Length))!);
+                Citizens.Add(new NpcModel(Names[NumberOfMafia + i], 50, Function.Citizen, character, padModel));
             }
         }
 
